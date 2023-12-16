@@ -15,7 +15,7 @@ function App() {
     },
     {
       path:'/home',
-      element:<SandBookingForm/>
+      element:<Home/>
     },
     {
       path:'/createOrder',
