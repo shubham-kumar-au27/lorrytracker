@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import { createOrder, getOrderById } from '../../controllers/booking_controller/sand_booking.js';
+import { createOrder, updateOrder } from '../../controllers/booking_controller/sand_booking.js';
 
 
 
@@ -7,8 +7,7 @@ const bookingRouter = Router();
 
 
 bookingRouter.post('/createorder',createOrder)
-
-bookingRouter.get('/getorders',getOrderById)
+bookingRouter.put('/updateorder/:id',updateOrder)
 // bookingRouter.get('/otp',verifyUser)
 
 export default bookingRouter;

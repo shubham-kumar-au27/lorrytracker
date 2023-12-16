@@ -16,7 +16,7 @@ const Header = () => {
   const user = useSelector((store) => store.user);
   const handleSignOut = () => {
     signOut(auth)
-      .then(() => console.log("logged-out"))
+      .then(() => console.log("logged out"))
       .catch((error) => {
         console.log(error);
       });
@@ -31,7 +31,7 @@ const Header = () => {
       if (user) {
         const {uid,email,displayName} = user
        dispatch(addUser({uid:uid, email:email, displayName:displayName}))
-      
+      //  navigate('/home')
         
       } else {
        dispatch(removeUser())
@@ -71,11 +71,7 @@ const Header = () => {
           <button onClick={handleSignOut} className="text-white p-2">
             <FaSignOutAlt />
           </button>
-    
-        <button className="text-white p-2">
-          <Link to='/createOrder'>create order</Link>
-        </button>
-    
+          <Link to ={'/createOrder'}> <button className="text-white p-2">{"Create Order"}</button></Link>
         </div>
       </div>
       )
