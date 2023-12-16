@@ -40,6 +40,29 @@ export const createOrder = async (req, res, next) => {
 };
 
 
+export const getOrderById = async (req,res)=>{
+  try{
+    // console.log('called')
+
+    const user = await req.query.userid
+    console.log(user)
+
+    const sanddata = await SandBooking.find({userId:user})
+
+    console.log(sanddata)
+
+    return res.send(sanddata)
+
+
+  }catch(error){
+    console.log('failed')
+    console.log(error)
+    return res.send(error)
+
+  }
+
+}
+
 
 export const updateOrder = async (req, res, next) => {
   try {
