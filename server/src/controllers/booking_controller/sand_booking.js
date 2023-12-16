@@ -32,3 +32,26 @@ export const createOrder = async (req, res, next) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+export const getOrderById = async (req,res)=>{
+  try{
+    // console.log('called')
+  
+    const user = await req.query.userid
+    console.log(user)
+
+    const sanddata = await sandBookingSchema.find({userId:user})
+
+    console.log(sanddata)
+
+    return res.send(sanddata)
+
+  
+  }catch(error){
+    console.log('failed')
+    console.log(error)
+    return res.send(error)
+
+  }
+
+}

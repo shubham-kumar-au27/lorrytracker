@@ -15,7 +15,7 @@ function App() {
     },
     {
       path:'/home',
-      element:<SandBookingForm/>
+      element:<Home/>
     },
     {
       path:'/createOrder',
@@ -25,7 +25,7 @@ function App() {
   ])
   return (
     <Provider store={appStore}>
-      <div className="App">
+      <div className="App w-full">
       <RouterProvider router={appRouter}/>
       </div>
     </Provider>
