@@ -1,5 +1,6 @@
 
 import moment from 'moment';
+import mongoose from 'mongoose';
 import sandBookingSchema from '../../models/booking_models/booking.model.js';
 
 export const createOrder = async (req, res, next) => {
@@ -33,7 +34,7 @@ export const createOrder = async (req, res, next) => {
   }
 };
 
-export const getOrderById = async (req,res)=>{
+export const getOrder = async (req,res)=>{
   try{
     // console.log('called')
   
@@ -42,7 +43,7 @@ export const getOrderById = async (req,res)=>{
 
     const sanddata = await sandBookingSchema.find({userId:user})
 
-    console.log(sanddata)
+    // console.log(sanddata)
 
     return res.send(sanddata)
 
@@ -51,6 +52,23 @@ export const getOrderById = async (req,res)=>{
     console.log('failed')
     console.log(error)
     return res.send(error)
+
+  }
+
+}
+
+export const getorderById = async (req,res)=>{
+  try{
+
+    const getId = req.query.orderid
+    console.log(getId)
+
+    const getOrder = await sandBookingSchema.findById({_id:getId})
+
+    return res.send(getOrder)
+    // console.log(getOrder)
+  }catch(err){
+    return res.send(err)
 
   }
 

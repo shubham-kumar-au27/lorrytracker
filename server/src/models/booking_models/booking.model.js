@@ -20,7 +20,7 @@ const sandBookingSchema  = mongoose.Schema({
   },
   delivery_status: {
     type: String,
-    enum: ['Pending', 'Confirmed', 'Delivered'],
+    enum: ['Pending', 'on the way', 'Delivered'],
     default: 'Pending',
   },
 }, {

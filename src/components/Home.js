@@ -10,10 +10,10 @@ const Home = () => {
     const [orders,setOrders] = useState([])
     const getOrdersById = async ()=>{
         try{
-                if (user){
+                // if (user){
                     const getOrders = await axios.get(`http://localhost:5000/api/v1/order/getorders?userid=${user}`)
                     setOrders(getOrders?.data)
-                }
+                // }
             
         }catch(error){
             console.log(error)
@@ -29,7 +29,7 @@ const Home = () => {
     <>
         <Header/>
         <h1 className='align-middle items-center'>My Orders</h1>
-        <div className='flex w-full h-screen flex-col  md:flex-row'>
+        <div className='flex w-full h-screen flex-col  md:flex-row' >
             {
                 orders?.map((order)=>(<OrdersCard key={order._id} orders={order}/>))
             }

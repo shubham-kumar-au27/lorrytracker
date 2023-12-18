@@ -33,21 +33,6 @@ const Login = () => {
             // <<<<<<<<<<<<<<      Signed up      >>>>>>>>>>>>>>>>>>>
                 const user = userCredential.user;
 
-                // updateProfile(auth.currentUser, {
-                //     displayName: name.current.value,
-                //     photoURL: User_Avatar
-                //   }).then(()=>{
-                //     const {uid,email,displayName,photoURL} = auth.currentUser;
-
-                //     dispatch(addUser({uid:uid,email:email,displayName:displayName,photoURL:photoURL}))
-
-                //     // Profile updated!
-                //     // navigate('/browse')
-            
-                //   }).catch((error) => {
-                //     // An error occurred
-                //     setErrorMessage(error.message)
-                //   });
 
                 
                 console.log(user)

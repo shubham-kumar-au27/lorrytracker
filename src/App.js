@@ -5,6 +5,7 @@ import Home from './components/Home';
 import { Provider } from 'react-redux';
 import appStore from './utils/appStore';
 import SandBookingForm from './components/Bookingform';
+import Orderstage from './components/Orderstage';
 
 function App() {
   const appRouter = createBrowserRouter([
@@ -20,6 +21,10 @@ function App() {
     {
       path:'/createOrder',
       element:<SandBookingForm/>
+    },
+    {
+      path:'/orderstatus',
+      element:<Orderstage/>
     }
   
   ])
