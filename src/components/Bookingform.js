@@ -1,97 +1,89 @@
-import axios from 'axios';
-import React, { useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import Header from './Header';
+import axios from "axios";
+import React, { useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import Header from "./Header";
+import SandBook from "./SandBook";
+import { useNavigate } from "react-router-dom";
+
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const SandBookingForm = () => {
-    const bookingDate = useRef(null)
-    const quantity = useRef(null)
-    const deliveryAddress = useRef(null)
+  const [step, setStep] = useState(1);
+  const user = useSelector((store) => store.user);
+  const navigate =  useNavigate()
+  const [orderData, setOrderData] = useState({
+    bookingDate: '',
+    quantity: '',
+    deliveryAddress: '',
+    driver_number: " ",
+    distance: " ",
+    total_amount: " ",
+    delivery_status: '',
+    unloading_status: '',
+    isDelivered: '',
+    isPaymentReceived: '',
+  });
 
-    const user = useSelector(store => store.user);
+  const handleNextStep = () => {
+    setStep(step + 1);
+  };
 
-    const handleCreateOrder = ()=>{
-        try{
-            const Data = axios.post('http://localhost:5000/api/v1/order/createorder',{userId:user.uid,
-            bookingDate:bookingDate.current.value,
-        quantity:quantity.current.value,deliveryAddress:deliveryAddress.current.value})
-        console.log( Data.data)
-        // console.log(user?.uid)
-        // console.log(deliveryAddress.current.value,quantity.current.value)
-
-        }catch(error){
-            console.log(error)
+  const handleCreateOrder = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/v1/order/createorder",
+        {
+          userId: user.uid,
+          ...orderData,
         }
-        
+      );
+      toast.success('order Create  successful!', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      navigate('/home')
+      
+    } catch (error) {
+      console.log(error);
+      toast.error(error, {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
-
-  
+  };
 
   return (
     <>
-    <Header/>
-    <div className="flex w-full m-10">
-<form  className="space-y-4"  onSubmit={(e)=> e.preventDefault()}>
-  <div>
-    <label  className="block text-sm font-medium text-gray-700" ></label>
-    {/* <input
-      type="text"
-      className="mt-1 p-2 border rounded-md w-full"
-      required
-    /> */
-    }
-  </div>
+      <Header />
+      <div className="flex flex-col m-10">
+        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+          {step === 1 && <SandBook orderData={orderData} setOrderData={setOrderData} />}
 
-  <div>
-    <label  className="block text-sm font-medium text-gray-700">
-      Booking Date
-    </label>
-    <input
-      type="date"
-      ref = {bookingDate}
-      className="mt-1 p-2 border rounded-md w-full"
-      required
-    />
-  </div>
+          
 
-  <div>
-    <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
-      Quantity
-    </label>
-    <input
-      type="number"
-      ref={quantity}
-     
-      className="mt-1 p-2 border rounded-md w-full"
-      required
-    />
-  </div>
-
-  <div>
-    <label htmlFor="deliveryAddress" className="block text-sm font-medium text-gray-700">
-      Delivery Address
-    </label>
-    <input
-      type="text"
-      ref={deliveryAddress}
-      className="mt-1 p-2 border rounded-md w-full"
-      required
-    />
-  </div>
-
-  <div>
-    <button
-      type="submit"
-      className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
-      onClick={handleCreateOrder}
-    >
-      Submit
-    </button>
-  </div>
-</form>
-</div>
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
+              onClick={step === 1 ? handleCreateOrder : handleNextStep}
+            >
+              {step === 1 ? 'Submit' : 'Next'}
+            </button>
+          </div>
+        </form>
+        <ToastContainer />
+      </div>
     </>
-    
   );
 };
 

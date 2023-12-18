@@ -18,10 +18,40 @@ const sandBookingSchema  = mongoose.Schema({
     type: String,
     required: true,
   },
+  vehicle_number:{
+    type:String,
+    required:true
+  },
+  driver_number:{
+    type:String,
+    required:true
+  },distance:{
+    type :String,
+    required:true
+  },
+  total_amount:{
+    type :String,
+    required:true
+  },
   delivery_status: {
     type: String,
     enum: ['Pending', 'on the way', 'Delivered'],
     default: 'Pending',
+  },
+  unloading_status: {
+    type: String,
+    enum: ['Yes', 'No'],
+    default: 'No',
+  },
+  isDelivered: {
+    type: String,
+    enum: ['Yes', 'No'],
+    default: 'No',
+  },
+  isPaymentReceived: {
+    type: String,
+    enum: ['Yes', 'No'],
+    default: 'No',
   },
 }, {
   timestamps: true,
