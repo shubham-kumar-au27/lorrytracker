@@ -80,7 +80,7 @@ const Login = () => {
             });
         }
     }
-  };
+  ;
 
   const toggleSignInForm = () => {
     setIsSignInForm(!isSignInForm);
