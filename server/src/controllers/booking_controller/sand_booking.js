@@ -13,7 +13,7 @@ export const createOrder = async (req, res, next) => {
     }
 
     // Create a new order
-    const newOrder = new SandBooking({
+    const newOrder = new sandBookingSchema({
       userId,
       bookingDate,
       quantity,
@@ -46,7 +46,7 @@ export const getOrder = async (req,res)=>{
     const user = await req.query.userid
     console.log(user)
 
-    const sanddata = await SandBooking.find({userId:user})
+    const sanddata = await sandBookingSchema.find({userId:user})
 
     // console.log(sanddata)
 
@@ -105,7 +105,7 @@ export const updateOrder = async (req, res, next) => {
     }
 
     // Find the existing order by ID
-    const existingOrder = await SandBooking.findById(orderId);
+    const existingOrder = await sandBookingSchema.findById(orderId);
 
     // Check if the order exists
     if (!existingOrder) {
@@ -128,6 +128,7 @@ export const updateOrder = async (req, res, next) => {
 
     // Save the updated order to the database
     await existingOrder.save();
+    console.log(existingOrder)
 
     return res.status(200).json({ message: 'Order updated successfully' });
   } catch (error) {
