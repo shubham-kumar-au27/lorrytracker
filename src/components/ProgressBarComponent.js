@@ -7,6 +7,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CheckIcon from '@mui/icons-material/Check';
 
 const CustomProgressBar = ({ deliveryStatus, unloadingStatus, isDelivered, isPaymentReceived }) => {
+    console.log(deliveryStatus, unloadingStatus, isDelivered, isPaymentReceived)
     const [unloadingActive, setUnloadingActive] = useState(false);
     const [deliveryActive, setDeliveryActive] = useState(false);
     const [paymentReceivedActive, setPaymentReceivedActive] = useState(false);
@@ -19,20 +20,20 @@ const CustomProgressBar = ({ deliveryStatus, unloadingStatus, isDelivered, isPay
       setDeliveredActive(isDelivered === 'Yes');
     }, [unloadingStatus, deliveryStatus, isPaymentReceived, isDelivered]);
 
-  const getStepContent = (step) => {
-    switch (step) {
-      case 0:
-        return `Unloading Status: ${unloadingStatus}`;
-      case 1:
-        return `Delivery Status: ${deliveryStatus}`;
-      case 2:
-        return `Payment Received: ${isPaymentReceived}`;
-      case 3:
-        return `Delivered: ${isDelivered}`;
-      default:
-        return '';
-    }
-  };
+    const getStepContent = (step) => {
+        switch (step) {
+          case 0:
+            return `Unloading Status: ${unloadingStatus?.status}, Date: ${unloadingStatus?.date ? new Date(unloadingStatus?.date).toLocaleDateString() : 'Yet to be unload'}`;
+          case 1:
+            return `Delivery Status: ${deliveryStatus?.status}, Date: ${deliveryStatus?.date ? new Date(deliveryStatus?.date).toLocaleDateString() : 'Yes to be Delivered'}`;
+          case 2:
+            return `Payment Received: ${isPaymentReceived?.status}, Date: ${isPaymentReceived?.date ? new Date(isPaymentReceived?.date).toLocaleDateString() : 'yet to be received'}`;
+          case 3:
+            return `Delivered: ${isDelivered?.status}, Date: ${isDelivered?.date ? new Date(isDelivered?.date).toLocaleDateString() : 'Yes to be delivered'}`;
+          default:
+            return '';
+        }
+      };
 
   const steps = ['Unloading', 'Delivery', 'isPaymentReceived', 'Delivered'];
 

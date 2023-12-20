@@ -1,11 +1,13 @@
-import React, { useRef, useState } from 'react';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import React, { useEffect, useRef, useState } from 'react';
+import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { checkValidData } from '../utils/validate';
 import { auth } from '../utils/firebase';
 import Header from './Header';
 import { useNavigate } from 'react-router-dom';
+import { addUser, removeUser } from '../utils/userSlice';
+import { useDispatch } from 'react-redux';
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
@@ -16,6 +18,7 @@ const Login = () => {
   const name = useRef(null);
   const email = useRef(null);
   const password = useRef(null);
+  const dispatch = useDispatch()
 
     const HandleBtnClick = ()=>{
         //Validate the form Data------
@@ -85,6 +88,19 @@ const Login = () => {
   const toggleSignInForm = () => {
     setIsSignInForm(!isSignInForm);
   };
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+      //   const {uid,email,displayName} = user
+      //  dispatch(addUser({uid:uid, email:email, displayName:displayName}))
+       navigate('/home')
+        
+      } 
+      
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <div>

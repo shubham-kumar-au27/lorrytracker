@@ -3,13 +3,22 @@ import React, { useState } from 'react';
 import { useTable, usePagination } from 'react-table';
 import CustomProgressBar from './ProgressBarComponent';
 import { Link } from 'react-router-dom';
-
+import { useDispatch } from 'react-redux';
 import { CSVLink } from 'react-csv';
-
+import { saveOrder } from '../utils/ordersSlice';
 
 const OrderTable = ({ orders }) => {
-//   const dispatch = useDispatch();
-    const [order,setOrder]= useState([])
+// const [order,setOrder] = useState()
+const dispatch = useDispatch()
+
+const handleClick = (order)=>{
+    console.log('clicked')
+    // console.log(order)
+    dispatch(saveOrder({order:order}))
+    console.log(   dispatch(saveOrder({order:order})), "get")
+    
+  }
+
   const columns = React.useMemo(
     () => [
       {
@@ -36,7 +45,7 @@ const OrderTable = ({ orders }) => {
             Cell: ({ row }) => (
               <Link
                 to="/orderstatus"
-                onClick={() => setOrder({ order: row.original })}
+                onClick={() => handleClick(row.original)}
                 className="text-blue-500 hover:underline"
               >
                 View
@@ -49,10 +58,10 @@ const OrderTable = ({ orders }) => {
         Header: 'Progress',
         Cell: ({ row }) => (
           <CustomProgressBar
-            deliveryStatus={row.original.delivery_status}
-            unloadingStatus={row.original.unloading_status}
-            isDelivered={row.original.isDelivered}
-            isPaymentReceived={row.original.isPaymentReceived}
+          deliveryStatus={row?.original?.delivery_status}
+          unloadingStatus={row?.original?.unloading_status}
+          isDelivered={row?.original?.isDelivered?.status}
+          isPaymentReceived={row?.original?.isPaymentReceived}
           />
         ),
       },
@@ -62,7 +71,7 @@ const OrderTable = ({ orders }) => {
           <div className="flex space-x-2">
             <Link
               to="/orderstatus"
-              onClick={() => setOrder({ order: row.original })}
+              onClick={() => handleClick(row.original)}
               className="text-blue-500 hover:underline"
             >
               View
@@ -74,7 +83,7 @@ const OrderTable = ({ orders }) => {
         ),
       },
     ],
-    [order]
+    [dispatch]
   );
 
   const {
@@ -95,18 +104,18 @@ const OrderTable = ({ orders }) => {
   } = useTable({ columns, data: orders }, usePagination);
 
   return (
-    <div className="container mx-auto my-8">
+    <div className="container mx-auto my-8 overflow-x-auto">
       <table {...getTableProps()} className="w-full border-collapse border border-gray-300 rounded shadow bg-white">
         <thead>
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()} className="bg-gray-200">
               {headerGroup.headers.map((column) => (
                 <th
-                  {...column.getHeaderProps()}
-                  className="py-3 px-4 border-b border-gray-300 font-medium text-gray-700"
-                >
-                  {column.render('Header')}
-                </th>
+                    {...column.getHeaderProps()}
+                    className="py-3 px-4 border-b border-gray-300 font-medium text-gray-700 text-sm sm:text-base"
+                    >
+                    {column.render('Header')}
+                    </th>
               ))}
             </tr>
           ))}
@@ -122,7 +131,7 @@ const OrderTable = ({ orders }) => {
                 }`}
               >
                 {row.cells.map((cell) => (
-                  <td {...cell.getCellProps()} className="py-3 px-4 border-b border-gray-300">
+                    <td {...cell.getCellProps()} className="py-3 px-4 border-b border-gray-300 text-sm sm:text-base">
                     {cell.render('Cell')}
                   </td>
                 ))}
@@ -131,72 +140,79 @@ const OrderTable = ({ orders }) => {
           })}
         </tbody>
       </table>
-      <div className="mt-4 flex items-center justify-between">
-        <div>
-          <button
-            onClick={() => gotoPage(0)}
-            disabled={!canPreviousPage}
-            className="px-3 py-2 border border-gray-300 rounded cursor-pointer"
-          >
-            {'<<'}
-          </button>{' '}
-          <button
-            onClick={() => previousPage()}
-            disabled={!canPreviousPage}
-            className="px-3 py-2 border border-gray-300 rounded cursor-pointer"
-          >
-            {'<'}
-          </button>{' '}
-          <button
-            onClick={() => nextPage()}
-            disabled={!canNextPage}
-            className="px-3 py-2 border border-gray-300 rounded cursor-pointer"
-          >
-            {'>'}
-          </button>{' '}
-          <button
-            onClick={() => gotoPage(pageCount - 1)}
-            disabled={!canNextPage}
-            className="px-3 py-2 border border-gray-300 rounded cursor-pointer"
-          >
-            {'>>'}
-          </button>
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-gray-700">
-            Page{' '}
-            <strong>
-              {pageIndex + 1} of {pageOptions.length}
-            </strong>{' '}
-          </span>
-          <span className="text-gray-700">| Go to page:</span>
-          <input
-            type="number"
-            defaultValue={pageIndex + 1}
-            onChange={(e) => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0;
-              gotoPage(page);
-            }}
-            className="px-2 py-1 border border-gray-300 rounded"
-            style={{ width: '60px' }}
-          />
-        </div>
-        <select
-          value={pageSize}
-          onChange={(e) => {
-            setPageSize(Number(e.target.value));
-          }}
-          className="px-2 py-1 border border-gray-300 rounded"
-        >
-          {[10, 20, 30, 40, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              Show {pageSize}
-            </option>
-          ))}
-        </select>
-      </div>
+        <Pagination
+        canPreviousPage={canPreviousPage}
+        canNextPage={canNextPage}
+        pageCount={pageCount}
+        gotoPage={gotoPage}
+        nextPage={nextPage}
+        previousPage={previousPage}
+        pageIndex={pageIndex}
+        pageOptions={pageOptions}
+        pageSize={pageSize}
+        setPageSize={setPageSize}
+        />
     </div>
   );
 };
+
+
+// Constants
+const PAGE_SIZES = [10, 20, 30, 40, 50];
+
+// Pagination Component
+const Pagination = ({ canPreviousPage, canNextPage, pageCount, gotoPage, nextPage, previousPage, pageIndex, pageOptions, pageSize, setPageSize }) => (
+  <div className="mt-4 flex items-center justify-between">
+    <div>
+      <button onClick={() => gotoPage(0)} disabled={!canPreviousPage} className="px-3 py-2 border border-gray-300 rounded cursor-pointer">
+        {'<<'}
+      </button>{' '}
+      <button onClick={previousPage} disabled={!canPreviousPage} className="px-3 py-2 border border-gray-300 rounded cursor-pointer">
+        {'<'}
+      </button>{' '}
+      <button onClick={nextPage} disabled={!canNextPage} className="px-3 py-2 border border-gray-300 rounded cursor-pointer">
+        {'>'}
+      </button>{' '}
+      <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage} className="px-3 py-2 border border-gray-300 rounded cursor-pointer">
+        {'>>'}
+      </button>
+    </div>
+    <div className="flex items-center space-x-2">
+      <span className="text-gray-700">
+        Page{' '}
+        <strong>
+          {pageIndex + 1} of {pageOptions.length}
+        </strong>{' '}
+      </span>
+      <span className="text-gray-700">| Go to page:</span>
+      <input
+        type="number"
+        defaultValue={pageIndex + 1}
+        onChange={(e) => {
+          const page = e.target.value ? Number(e.target.value) - 1 : 0;
+          gotoPage(page);
+        }}
+        className="px-2 py-1 border border-gray-300 rounded"
+        style={{ width: '60px' }}
+      />
+    </div>
+    <select
+      value={pageSize}
+      onChange={(e) => {
+        setPageSize(Number(e.target.value));
+      }}
+      className="px-2 py-1 border border-gray-300 rounded"
+    >
+      {PAGE_SIZES.map((pageSize) => (
+        <option key={pageSize} value={pageSize}>
+          Show {pageSize}
+        </option>
+      ))}
+    </select>
+  </div>
+);
+
+
+
 
 export default OrderTable;

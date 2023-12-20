@@ -6,10 +6,12 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Orderstage = () => {
-  const fetchOrder = useSelector((store) => store?.order?.order);
-  const user = useSelector((store) => store.user);
+  const fetchOrder = useSelector((store) => store?.order?.orders);
+  console.log(fetchOrder)
+  const user = useSelector((store) => store?.user);
   const [orderDetails, setOrderDetails] = useState(null);
-  const orderId = fetchOrder?.order?._id;
+  const orderId = fetchOrder?.order?._id
+  console.log(orderId)
   const id = user?.uid
   console.log(id)
   const fetchDataById = async () => {
@@ -31,7 +33,7 @@ const Orderstage = () => {
   
       const response = await axios.put(
         `http://localhost:5000/api/v1/order/updatestatus/${orderId}?userId=${id}`,
-        { [statusType]: value } // Include statusType and value in the request payload
+        { [statusType]: { status: value, date: new Date() } } // Include statusType and value in the request payload
       );
   
       console.log('Response:', response);
@@ -47,7 +49,6 @@ const Orderstage = () => {
       toast.error('Error updating order status');
     }
   };
-  
   
   
   
@@ -85,8 +86,9 @@ const Orderstage = () => {
         <div className="border p-4 bg-gray-50">
           <div className='mb-4'>
             <label className="text-lg font-bold">Update Delivery Status</label>
-            <select className="border p-2" onChange={(e) => handleStatusUpdate('delivery', e.target.value)}>
-              <option value='on the way'>On the way</option>
+            <select className="border p-2" onChange={(e) => handleStatusUpdate('delivery_status', e.target.value)}>
+            <option value=''></option>  
+            <option value='on the way'>On the way</option>
             </select>
           </div>
           <div className='mb-4'>
@@ -105,7 +107,7 @@ const Orderstage = () => {
           </div>
           <div className='mb-4'>
             <label className="text-lg font-bold">Update Payment Status</label>
-            <select className="border p-2" onChange={(e) => handleStatusUpdate('isPaymentReceived', e.target.value)}>
+            <select className="border p-2" onChange={(e) => handleStatusUpdate('isPaymentReceived.status', e.target.value)}>
               <option value='Yes'>Payment Received</option>
               <option value='No'>Payment Not received</option>
             </select>
