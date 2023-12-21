@@ -107,7 +107,7 @@ const Orderstage = () => {
           </div>
           <div className='mb-4'>
             <label className="text-lg font-bold">Update Payment Status</label>
-            <select className="border p-2" onChange={(e) => handleStatusUpdate('isPaymentReceived.status', e.target.value)}>
+            <select className="border p-2" onChange={(e) => handleStatusUpdate('isPaymentReceived', e.target.value)}>
               <option value='Yes'>Payment Received</option>
               <option value='No'>Payment Not received</option>
             </select>

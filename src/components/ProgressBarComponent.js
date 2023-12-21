@@ -1,52 +1,117 @@
-import React, { useEffect, useState } from 'react';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import Typography from '@mui/material/Typography';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import CheckIcon from '@mui/icons-material/Check';
+import React, { useEffect, useState } from "react";
+import Stepper from "@mui/material/Stepper";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import Typography from "@mui/material/Typography";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import CheckIcon from "@mui/icons-material/Check";
 
-const CustomProgressBar = ({ deliveryStatus, unloadingStatus, isDelivered, isPaymentReceived }) => {
-    console.log(deliveryStatus, unloadingStatus, isDelivered, isPaymentReceived)
-    const [unloadingActive, setUnloadingActive] = useState(false);
-    const [deliveryActive, setDeliveryActive] = useState(false);
-    const [paymentReceivedActive, setPaymentReceivedActive] = useState(false);
-    const [deliveredActive, setDeliveredActive] = useState(false);
-  
-    useEffect(() => {
-      setUnloadingActive(unloadingStatus === 'Yes');
-      setDeliveryActive(deliveryStatus === 'Delivered');
-      setPaymentReceivedActive(isPaymentReceived === 'Yes');
-      setDeliveredActive(isDelivered === 'Yes');
-    }, [unloadingStatus, deliveryStatus, isPaymentReceived, isDelivered]);
+const CustomProgressBar = ({
+  deliveryStatus,
+  isPaymentDone,
+  weighBillReceived,
+  billSubmission,
+  paymentReceived,
+}) => {
+  console.log(
+    deliveryStatus,
+    isPaymentDone,
+    weighBillReceived,
+    billSubmission,
+    paymentReceived
+  );
+  const [deliveryStatusActive, setdeliveryStatusActive] = useState(false);
+  const [isPaymentDoneActive, setisPaymentDoneActive] = useState(false);
+  const [weighBillReceivedActive, setweighBillReceivedActive] = useState(false);
+  const [paymentReceivedActive, setPaymentReceivedActive] = useState(false);
+  const [billSubmissionActive, setbillSubmissionActive] = useState(false);
 
-    const getStepContent = (step) => {
-        switch (step) {
-          case 0:
-            return `Unloading Status: ${unloadingStatus?.status}, Date: ${unloadingStatus?.date ? new Date(unloadingStatus?.date).toLocaleDateString() : 'Yet to be unload'}`;
-          case 1:
-            return `Delivery Status: ${deliveryStatus?.status}, Date: ${deliveryStatus?.date ? new Date(deliveryStatus?.date).toLocaleDateString() : 'Yes to be Delivered'}`;
-          case 2:
-            return `Payment Received: ${isPaymentReceived?.status}, Date: ${isPaymentReceived?.date ? new Date(isPaymentReceived?.date).toLocaleDateString() : 'yet to be received'}`;
-          case 3:
-            return `Delivered: ${isDelivered?.status}, Date: ${isDelivered?.date ? new Date(isDelivered?.date).toLocaleDateString() : 'Yes to be delivered'}`;
-          default:
-            return '';
-        }
-      };
+  useEffect(() => {
+    setdeliveryStatusActive(deliveryStatus?.status === "Delivered");
+    setisPaymentDoneActive(isPaymentDone?.status === "Done");
+    setweighBillReceivedActive(weighBillReceived?.status === "Received");
+    setbillSubmissionActive(billSubmission?.status === "Submitted");
+    setPaymentReceivedActive(paymentReceived?.status === "Received");
+  }, [
+    deliveryStatus,
+    isPaymentDone,
+    weighBillReceived,
+    billSubmission,
+    paymentReceived,
+  ]);
 
-  const steps = ['Unloading', 'Delivery', 'isPaymentReceived', 'Delivered'];
+  const getStepContent = (step) => {
+    switch (step) {
+      case 0:
+        return `Delivery Status: ${deliveryStatus?.status}, Date: ${
+          deliveryStatus?.date
+            ? new Date(deliveryStatus?.date).toLocaleDateString()
+            : "Yet to be Delivered"
+        }`;
+      case 1:
+        return `payment Status: ${isPaymentDone?.status}, Date: ${
+          isPaymentDone?.date
+            ? new Date(isPaymentDone?.date).toLocaleDateString()
+            : "Yet to be Payment"
+        }`;
+      case 2:
+        return `Weigh-Bill Received: ${weighBillReceived?.status}, Date: ${
+          weighBillReceived?.date
+            ? new Date(weighBillReceived?.date).toLocaleDateString()
+            : "yet to be received"
+        }`;
+      case 3:
+        return `Bill-Submission: ${billSubmission?.status}, Date: ${
+          billSubmission?.date
+            ? new Date(billSubmission?.date).toLocaleDateString()
+            : "yet to be Submit"
+        }`;
+
+      case 4:
+        return `Payment Received: ${paymentReceived?.status}, Date: ${
+          paymentReceived?.date
+            ? new Date(paymentReceived?.date).toLocaleDateString()
+            : "yet to be received"
+        }`;
+      default:
+        return "";
+    }
+  };
+
+  const steps = ["Delivered", "Payment", "Weigh Bill", "Bill Submission","Payment Received"];
 
   const getStepIcon = (index) => {
     switch (index) {
       case 0:
-        return unloadingActive ? <CheckIcon className="text-green-500" /> : <ArrowForwardIcon className="text-gray-500" />;
+        return deliveryStatusActive ? (
+          <CheckIcon className="text-green-500" />
+        ) : (
+          <ArrowForwardIcon className="text-gray-500" />
+        );
       case 1:
-        return deliveryActive ? <CheckIcon className="text-green-500" /> : <ArrowForwardIcon className="text-gray-500" />;
+        return isPaymentDoneActive ? (
+          <CheckIcon className="text-green-500" />
+        ) : (
+          <ArrowForwardIcon className="text-gray-500" />
+        );
       case 2:
-        return paymentReceivedActive ? <CheckIcon className="text-green-500" /> : <ArrowForwardIcon className="text-gray-500" />;
+        return weighBillReceivedActive ? (
+          <CheckIcon className="text-green-500" />
+        ) : (
+          <ArrowForwardIcon className="text-gray-500" />
+        );
       case 3:
-        return deliveredActive ? <CheckIcon className="text-green-500" /> : <ArrowForwardIcon className="text-gray-500" />;
+        return billSubmissionActive ? (
+          <CheckIcon className="text-green-500" />
+        ) : (
+          <ArrowForwardIcon className="text-gray-500" />
+        );
+        case 4:
+        return paymentReceivedActive ? (
+          <CheckIcon className="text-green-500" />
+        ) : (
+          <ArrowForwardIcon className="text-gray-500" />
+        );
       default:
         return null;
     }
@@ -61,30 +126,34 @@ const CustomProgressBar = ({ deliveryStatus, unloadingStatus, isDelivered, isPay
             StepIconProps={{
               style: {
                 color:
-                  (index === 0 && unloadingActive) ||
-                  (index === 1 && deliveryActive) ||
-                  (index === 2 && paymentReceivedActive) ||
-                  (index === 3 && deliveredActive)
-                    ? 'blue'
-                    : 'red',
+                  (index === 0 && deliveryStatusActive) ||
+                  (index === 1 && isPaymentDoneActive) ||
+                  (index === 2 && weighBillReceivedActive) ||
+                  (index === 3 && billSubmissionActive)||
+                  (index === 4 && paymentReceivedActive)
+                    ? "blue"
+                    : "red",
               },
             }}
           >
             <Typography
               style={{
                 color:
-                  (index === 0 && unloadingActive) ||
-                  (index === 1 && deliveryActive) ||
-                  (index === 2 && paymentReceivedActive) ||
-                  (index === 3 && deliveredActive)
-                    ? 'blue'
-                    : 'red',
+                  (index === 0 && deliveryStatusActive) ||
+                  (index === 1 && isPaymentDoneActive) ||
+                  (index === 2 && weighBillReceivedActive) ||
+                  (index === 3 && billSubmissionActive)||
+                  (index === 4 && paymentReceivedActive)
+                    ? "blue"
+                    : "red",
               }}
             >
               {label}
             </Typography>
           </StepLabel>
-          <div className="mt-2 text-sm text-gray-600">{getStepContent(index)}</div>
+          <div className="mt-2 text-sm text-gray-600">
+            {getStepContent(index)}
+          </div>
         </Step>
       ))}
     </Stepper>

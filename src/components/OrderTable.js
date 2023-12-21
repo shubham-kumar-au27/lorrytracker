@@ -59,9 +59,10 @@ const handleClick = (order)=>{
         Cell: ({ row }) => (
           <CustomProgressBar
           deliveryStatus={row?.original?.delivery_status}
-          unloadingStatus={row?.original?.unloading_status}
-          isDelivered={row?.original?.isDelivered?.status}
-          isPaymentReceived={row?.original?.isPaymentReceived}
+          isPaymentDone={row?.original?.isPaymentDone}
+          weighBillReceived={row?.original?.weighBillReceived}
+          billSubmission={row?.original?.billSubmission}
+          paymentReceived={row?.original?.paymentReceived}
           />
         ),
       },

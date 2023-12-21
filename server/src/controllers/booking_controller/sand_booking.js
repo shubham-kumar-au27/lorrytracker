@@ -8,11 +8,15 @@ export const createOrder = async (req, res, next) => {
       userId,
       bookingDate,
       quantity,
+      rate_per_km,
+      reach_name,
       deliveryAddress,
       vehicle_number,
       driver_number,
+      driver_name,
       distance,
       total_amount,
+
     } = req.body;
     console.log(userId, bookingDate, quantity, deliveryAddress);
 
@@ -26,15 +30,19 @@ export const createOrder = async (req, res, next) => {
       userId,
       bookingDate,
       quantity,
+      rate_per_km,
+      reach_name,
       deliveryAddress,
       vehicle_number,
       driver_number,
+      driver_name,
       distance,
       total_amount,
-      delivery_status: { status: 'Pending', date: null }, // Default status
-      unloading_status: { status: 'No', date: null }, // Default unloading status
-      isDelivered: { status: 'No', date: null }, // Default isDelivered status
-      isPaymentReceived: { status: 'No', date: null }, // Default isPaymentReceived status
+      delivery_status: { status: 'Not Delivered', date: null }, // Default status
+      isPaymentDone: { status: 'Not Done', date: null }, // Default unloading status
+      weighBillReceived: { status: 'Not Received', date: null }, // Default isDelivered status
+      billSubmission: { status: 'Not Submitted', date: null }, // Default isPaymentReceived status
+      paymentReceived: { status: 'Not Received', date: null }, // Default isPaymentReceived status
     });
 
     // Save the order to the database
@@ -97,15 +105,20 @@ export const updateOrder = async (req, res, next) => {
     const {
       bookingDate,
       quantity,
+      rate_per_km,
+      reach_name,
       deliveryAddress,
       vehicle_number,
       driver_number,
+      driver_name,
       distance,
       total_amount,
       delivery_status,
-      unloading_status,
-      isDelivered,
-      isPaymentReceived,
+      isPaymentDone,
+
+      weighBillReceived,
+      billSubmission,
+      paymentReceived
     } = req.body;
 
     // Validate the input data
@@ -124,6 +137,9 @@ export const updateOrder = async (req, res, next) => {
     // Update specific fields if they are present in the request body
     if (userId) existingOrder.userId = userId;
     if (bookingDate) existingOrder.bookingDate = bookingDate;
+    if (rate_per_km) existingOrder.rate_per_km = rate_per_km;
+    if (reach_name) existingOrder.reach_name = reach_name;
+    if (driver_name) existingOrder.driver_name = driver_name;
     if (quantity) existingOrder.quantity = quantity;
     if (deliveryAddress) existingOrder.deliveryAddress = deliveryAddress;
     if (vehicle_number) existingOrder.vehicle_number = vehicle_number;
@@ -141,26 +157,33 @@ export const updateOrder = async (req, res, next) => {
       };
     }
     
-    // Update unloading_status.date with an object conforming to statusSchema
-    if (unloading_status) {
-      existingOrder.unloading_status = {
-        status: unloading_status.status,
+    
+    if (isPaymentDone) {
+      existingOrder.isPaymentDone = {
+        status: isPaymentDone.status,
         date: new Date(),
       };
     }
     
-    // Update isDelivered.date with an object conforming to statusSchema
-    if (isDelivered) {
-      existingOrder.isDelivered = {
-        status: isDelivered.status,
+    
+    if (weighBillReceived) {
+      existingOrder.weighBillReceived = {
+        status: weighBillReceived.status,
         date: new Date(),
       };
     }
     
-    // Update isPaymentReceived.date with an object conforming to statusSchema
-    if (isPaymentReceived) {
-      existingOrder.isPaymentReceived = {
-        status: isPaymentReceived.status,
+  
+    if (billSubmission) {
+      existingOrder.billSubmission = {
+        status: billSubmission.status,
+        date: new Date(),
+      };
+    }
+
+    if (paymentReceived) {
+      existingOrder.paymentReceived = {
+        status: paymentReceived.status,
         date: new Date(),
       };
     }
