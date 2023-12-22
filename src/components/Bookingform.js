@@ -14,16 +14,21 @@ const SandBookingForm = () => {
   const user = useSelector((store) => store.user);
   const navigate =  useNavigate()
   const [orderData, setOrderData] = useState({
-    bookingDate: '',
-    quantity: '',
-    deliveryAddress: '',
-    driver_number: " ",
-    distance: " ",
-    total_amount: " ",
-    delivery_status: '',
-    unloading_status: '',
-    isDelivered: '',
-    isPaymentReceived: '',
+      bookingDate: '',
+      quantity: '',
+      rate_per_km: '',
+      reach_name: '',
+      deliveryAddress: '',
+      vehicle_number: '',
+      driver_number: '',
+      driver_name: '',
+      distance: '',
+      total_amount: '',
+      delivery_status: '',
+      isPaymentDone: '',
+      weighBillReceived: '',
+      billSubmission: '',
+      paymentReceived:" ",
   });
 
   const handleNextStep = () => {

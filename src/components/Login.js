@@ -1,16 +1,19 @@
-import React, { useRef, useState } from 'react';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import React, { useEffect, useRef, useState } from 'react';
+import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { checkValidData } from '../utils/validate';
 import { auth } from '../utils/firebase';
 import Header from './Header';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { addUser, removeUser } from '../utils/userSlice';
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [errormessage, setErrorMessage] = useState(null);
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
 
   const name = useRef(null);
@@ -36,21 +39,20 @@ const Login = () => {
             // <<<<<<<<<<<<<<      Signed up      >>>>>>>>>>>>>>>>>>>
                 const user = userCredential.user;
 
-                // updateProfile(auth.currentUser, {
-                //     displayName: name.current.value,
-                //     photoURL: User_Avatar
-                //   }).then(()=>{
-                //     const {uid,email,displayName,photoURL} = auth.currentUser;
+                updateProfile(auth.currentUser, {
+                    displayName: name.current.value
+                  }).then(()=>{
+                    const {uid,email,displayName} = auth.currentUser;
 
-                //     dispatch(addUser({uid:uid,email:email,displayName:displayName,photoURL:photoURL}))
+                    dispatch(addUser({uid:uid,email:email,displayName:displayName}))
 
-                //     // Profile updated!
-                //     // navigate('/browse')
+                    // Profile updated!
+                    // navigate('/browse')
             
-                //   }).catch((error) => {
-                //     // An error occurred
-                //     setErrorMessage(error.message)
-                //   });
+                  }).catch((error) => {
+                    // An error occurred
+                    setErrorMessage(error.message)
+                  });
 
                 
                 console.log(user)
@@ -80,11 +82,27 @@ const Login = () => {
             });
         }
     }
-  };
+  
 
   const toggleSignInForm = () => {
     setIsSignInForm(!isSignInForm);
   };
+  useEffect(()=>{
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user){
+       
+       navigate('/home')
+        
+      } 
+      // else {
+      //  dispatch(removeUser())
+      //  navigate('/')
+      // }
+    });
+
+    return () => unsubscribe();
+
+  },[])
 
   return (
     <div>
@@ -139,6 +157,6 @@ const Login = () => {
       <ToastContainer />
     </div>
   );
-};
+}
 
 export default Login;

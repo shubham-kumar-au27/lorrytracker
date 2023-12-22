@@ -28,7 +28,7 @@ const Header = () => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
+      if (user){
         const {uid,email,displayName} = user
        dispatch(addUser({uid:uid, email:email, displayName:displayName}))
       //  navigate('/home')
@@ -68,10 +68,17 @@ const Header = () => {
           </button>
         </div>
         <div className="flex items-center space-x-4">
-          <button onClick={handleSignOut} className="text-white p-2">
-            <FaSignOutAlt />
-          </button>
-          <Link to ={'/createOrder'}> <button className="text-white p-2">{"Create Order"}</button></Link>
+         
+              <button onClick={handleSignOut} className="text-white p-2">
+              <FaSignOutAlt />
+             </button>
+
+           
+          {
+            user.displayName === 'admin'?(<div></div>):
+            (<Link to ={'/createOrder'}> <button className="text-white p-2">{"Create Order"}</button></Link>)
+          
+        }
         </div>
       </div>
       )
