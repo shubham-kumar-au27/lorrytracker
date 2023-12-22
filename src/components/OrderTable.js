@@ -6,18 +6,29 @@ import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { CSVLink } from 'react-csv';
 import { saveOrder } from '../utils/ordersSlice';
+import EditOrderModal from './EditOrderModal';
 
 const OrderTable = ({ orders }) => {
-// const [order,setOrder] = useState()
-const dispatch = useDispatch()
+  const dispatch = useDispatch()
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
-const handleClick = (order)=>{
+  const handleOpen = (order) => {
+    setSelectedOrder(order);
+    setModalIsOpen(true);
+  };
+
+  const handleClick = (order)=>{
     console.log('clicked')
     // console.log(order)
     dispatch(saveOrder({order:order}))
     console.log(   dispatch(saveOrder({order:order})), "get")
     
   }
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
 
   const columns = React.useMemo(
     () => [
@@ -41,14 +52,13 @@ const handleClick = (order)=>{
             accessor: 'vehicle_number',
           },
           {
-            Header: 'View',
+            Header: 'EIDIT',
             Cell: ({ row }) => (
               <Link
-                to="/orderstatus"
-                onClick={() => handleClick(row.original)}
-                className="text-blue-500 hover:underline"
+              onClick={() => handleOpen(row.original)}
+              className="text-blue-500 hover:underline"
               >
-                View
+                Edit
               </Link>
             ),
           },
@@ -153,6 +163,12 @@ const handleClick = (order)=>{
         pageSize={pageSize}
         setPageSize={setPageSize}
         />
+
+        <EditOrderModal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        order={selectedOrder}
+      />
     </div>
   );
 };

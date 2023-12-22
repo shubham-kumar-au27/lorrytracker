@@ -7,13 +7,18 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const Orderstage = () => {
   const fetchOrder = useSelector((store) => store?.order?.orders);
-  console.log(fetchOrder)
   const user = useSelector((store) => store?.user);
   const [orderDetails, setOrderDetails] = useState(null);
-  const orderId = fetchOrder?.order?._id
-  console.log(orderId)
-  const id = user?.uid
-  console.log(id)
+  const orderId = fetchOrder?.order?._id;
+  const id = user?.uid;
+  const [visibleDropdowns, setVisibleDropdowns] = useState({
+    deliveryStatus: true,
+    paymentStatus: false,
+    weighBillStatus: false,
+    billStatus: false,
+    paymentReceivedStatus: false,
+  });
+
   const fetchDataById = async () => {
     try {
       const getData = await axios.get(`http://localhost:5000/api/v1/order/getOrderById?orderid=${orderId}`);
@@ -25,22 +30,23 @@ const Orderstage = () => {
 
   useEffect(() => {
     fetchDataById();
+    const savedDropdowns = localStorage.getItem('visibleDropdowns'); // Get from local storage
+    if (savedDropdowns) {
+      setVisibleDropdowns(JSON.parse(savedDropdowns));
+    }
   }, []);
 
   const handleStatusUpdate = async (statusType, value) => {
     try {
-      console.log('Updating order:', orderId, 'UserID:', id, 'Status:', statusType, 'Value:', value);
-  
       const response = await axios.put(
         `http://localhost:5000/api/v1/order/updatestatus/${orderId}?userId=${id}`,
-        { [statusType]: { status: value, date: new Date() } } // Include statusType and value in the request payload
+        { [statusType]: { status: value, date: new Date() } }
       );
-  
-      console.log('Response:', response);
-  
+
       if (response.status === 200) {
-        await fetchDataById(); // Await the completion of fetchDataById
+        await fetchDataById();
         toast.success(`Order ${statusType} updated to ${value}`);
+        updateVisibleDropdowns(statusType, value);
       } else {
         toast.error('Error updating order status');
       }
@@ -49,10 +55,64 @@ const Orderstage = () => {
       toast.error('Error updating order status');
     }
   };
+
+  const updateVisibleDropdowns = (statusType, value) => {
+    setVisibleDropdowns((prevVisibleDropdowns) => {
+      let updatedDropdowns = { ...prevVisibleDropdowns };
+      switch (statusType) {
+        case 'delivery_status':
+          updatedDropdowns = { ...updatedDropdowns, deliveryStatus: false, paymentStatus: value === 'Delivered' };
+          break;
+        case 'isPaymentDone':
+          updatedDropdowns = { ...updatedDropdowns, paymentStatus: false, weighBillStatus: value === 'Done' };
+          break;
+        case 'weighBillReceived':
+          updatedDropdowns = { ...updatedDropdowns, weighBillStatus: false, billStatus: value === 'Received' };
+          break;
+        case 'billSubmission':
+          updatedDropdowns = { ...updatedDropdowns, billStatus: false, paymentReceivedStatus: value === 'Submitted' };
+          break;
+        case 'paymentReceived':
+          if (value === 'Received') {
+            updatedDropdowns = { deliveryStatus: false, paymentStatus: false, weighBillStatus: false, billStatus: false, paymentReceivedStatus: false };
+            toast.success('Your order is closed',{
+              position: 'top-right',
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+            });
+          }
+          break;
+        default:
+          return prevVisibleDropdowns;
+      }
+      localStorage.setItem('visibleDropdowns', JSON.stringify(updatedDropdowns)); // Save to local storage
+      return updatedDropdowns;
+    });
+  };
+
+  useEffect(() => {
+    fetchDataById();
+    updateVisibleDropdownsBasedOnOrderStatus();
+  }, []);
   
+  const updateVisibleDropdownsBasedOnOrderStatus = () => {
+    const deliveryStatus = fetchOrder?.order?.delivery_status?.status;
+    const paymentStatus = fetchOrder?.order?.isPaymentDone?.status;
+    const weighBillStatus = fetchOrder?.order?.weighBillReceived?.status;
+    const billStatus = fetchOrder?.order?.billSubmission?.status;
+    const paymentReceivedStatus = fetchOrder?.order?.paymentReceived?.status;
   
-  
-  
+    setVisibleDropdowns({
+      deliveryStatus: deliveryStatus !== 'Delivered',
+      paymentStatus: deliveryStatus === 'Delivered' && paymentStatus !== 'Done',
+      weighBillStatus: paymentStatus === 'Done' && weighBillStatus !== 'Received',
+      billStatus: weighBillStatus === 'Received' && billStatus !== 'Submitted',
+      paymentReceivedStatus: billStatus === 'Submitted' && paymentReceivedStatus !== 'Received',
+    });
+  };
 
   return (
     <>
@@ -84,42 +144,80 @@ const Orderstage = () => {
           </div>
         </div>
         <div className="border p-4 bg-gray-50">
-          <div className='mb-4'>
-            <label className="text-lg font-bold">Update Delivery Status</label>
-            <select className="border p-2" onChange={(e) => handleStatusUpdate('delivery_status', e.target.value)}>
-            <option value=''></option>  
-            <option value='on the way'>On the way</option>
-            </select>
-          </div>
-          <div className='mb-4'>
-            <label className="text-lg font-bold">Update Unloading Status</label>
-            <select className="border p-2" onChange={(e) => handleStatusUpdate('unloading_status', e.target.value)}>
-              <option value='Yes'>Unloaded</option>
-              <option value='No'>Not Unloading</option>
-            </select>
-          </div>
-          <div className='mb-4'>
-            <label className="text-lg font-bold">Update Order Status</label>
-            <select className="border p-2" onChange={(e) => handleStatusUpdate('isDelivered', e.target.value)}>
-              <option value='Yes'>Delivered</option>
-              <option value='No'>Yet To be Delivered</option>
-            </select>
-          </div>
-          <div className='mb-4'>
-            <label className="text-lg font-bold">Update Payment Status</label>
-            <select className="border p-2" onChange={(e) => handleStatusUpdate('isPaymentReceived', e.target.value)}>
-              <option value='Yes'>Payment Received</option>
-              <option value='No'>Payment Not received</option>
-            </select>
-          </div>
+          {visibleDropdowns.deliveryStatus && (
+            <div className='mb-4'>
+              <label className="text-lg font-bold">Update Delivery Status</label>
+              <select
+                className="border p-2"
+                onChange={(e) => handleStatusUpdate('delivery_status', e.target.value)}
+                defaultValue={fetchOrder?.order?.delivery_status?.status || 'Not Delivered'}
+              >
+                <option value='Not Delivered'>Not Delivered</option>
+                <option value='Delivered'>Delivered</option>
+              </select>
+            </div>
+          )}
+
+          {visibleDropdowns.paymentStatus && (
+            <div className='mb-4'>
+              <label className="text-lg font-bold">Update Payment Status</label>
+              <select
+                className="border p-2"
+                onChange={(e) => handleStatusUpdate('isPaymentDone', e.target.value)}
+                defaultValue={fetchOrder?.order?.isPaymentDone?.status || 'Not Done'}
+              >
+                <option value='Not Done'>Not Done</option>
+                <option value='Done'>Done</option>
+              </select>
+            </div>
+          )}
+
+          {visibleDropdowns.weighBillStatus && (
+            <div className='mb-4'>
+              <label className="text-lg font-bold">Update Weigh-Bill Status</label>
+              <select
+                className="border p-2"
+                onChange={(e) => handleStatusUpdate('weighBillReceived', e.target.value)}
+                defaultValue={fetchOrder?.order?.weighBillReceived?.status || 'Not Received'}
+              >
+                <option value='Not Received'>Not Received</option>
+                <option value='Received'>Received</option>
+              </select>
+            </div>
+          )}
+
+          {visibleDropdowns.billStatus && (
+            <div className='mb-4'>
+              <label className="text-lg font-bold">Update Bill Status</label>
+              <select
+                className="border p-2"
+                onChange={(e) => handleStatusUpdate('billSubmission', e.target.value)}
+                defaultValue={fetchOrder?.order?.billSubmission?.status || 'Not Submitted'}
+              >
+                <option value='Not Submitted'>Not Submitted</option>
+                <option value='Submitted'>Submitted</option>
+              </select>
+            </div>
+          )}
+
+          {visibleDropdowns.paymentReceivedStatus && (
+            <div className='mb-4'>
+              <label className="text-lg font-bold">Update Payment Received Status</label>
+              <select
+                className="border p-2"
+                onChange={(e) => handleStatusUpdate('paymentReceived', e.target.value)}
+                defaultValue={fetchOrder?.order?.paymentReceived?.status || 'Not Received'}
+              >
+                <option value='Not Received'>Not Received</option>
+                <option value='Received'>Received</option>
+              </select>
+            </div>
+          )}
         </div>
       </div>
-      <ToastContainer position="bottom-right" />
+      <ToastContainer position="top-right" />
     </>
   );
 };
 
 export default Orderstage;
-
-
-
