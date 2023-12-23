@@ -5,6 +5,8 @@ import axios from 'axios'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ProgressBar from './ProgressBar';
+import { useParams } from 'react-router-dom/dist';
+import { BASE_URL } from '../utils/constants';
 
 const Orderstage = () => {
   const fetchOrder = useSelector((store) => store?.order?.order)
@@ -31,7 +33,7 @@ const Orderstage = () => {
       // console.log('Updating order:', orderId, 'UserID:', id, 'Status:', statusType, 'Value:', value);
   
       const response = await axios.put(
-        `http://localhost:5000/api/v1/order/updatestatus/${orderId}?userId=${id}`,
+        `${BASE_URL}/api/v1/order/updatestatus/${orderId}?userId=${id}`,
         { [statusType]: {status:value,date:new Date()}} // Include statusType and value in the request payload
       );
       console.log('Response:', response.data);
@@ -51,11 +53,11 @@ const Orderstage = () => {
     }
   };
 
-
-  const orderId = fetchOrder?.order?._id
+  const {_id} = useParams()
+  const orderId = _id
     const fetchDataById = async()=>{
       try{
-        const getData =  await axios.get(`http://localhost:5000/api/v1/order/getOrderById?orderid=${orderId}`)
+        const getData =  await axios.get(`${BASE_URL}/api/v1/order/getOrderById?orderid=${orderId}`)
 
         console.log(getData.data)
         setOrderDetails(getData.data)
@@ -63,8 +65,6 @@ const Orderstage = () => {
       }catch(err){
         console.log(err)
       }
-    
-      
     }
     const updateVisibleDropdowns = (statusType, value) => {
       setVisibleDropdowns((prevVisibleDropdowns) => {
@@ -94,8 +94,6 @@ const Orderstage = () => {
         }
       });
     };
-  
-
     useEffect(()=>{
       fetchDataById()
 
@@ -109,7 +107,7 @@ const Orderstage = () => {
           
           <div className='m-2 p-2'>
             <label>OrderId</label>
-            <h1>{fetchOrder?.order?._id}</h1>
+            <h1>{orderDetails?._id}</h1>
           </div>
           <ProgressBar orderDetails={orderDetails}/>
          
@@ -118,49 +116,49 @@ const Orderstage = () => {
                 <div className='border p-2 shadow-md hover:bg-slate-300'>
                   <ul>
                     <label className='font-bold'>Delivery Address</label>
-                    <li>{fetchOrder?.order?.deliveryAddress}</li>
+                    <li>{orderDetails?.deliveryAddress}</li>
                   </ul>
                 </div>
                 <div className='border p-2 shadow-md  hover:bg-slate-300'>
                   <ul>
                     <label className='font-bold'>Booking Date</label>
-                    <li>{fetchOrder?.order?.bookingDate}</li>
+                    <li>{orderDetails?.bookingDate}</li>
                   </ul>
                 </div>
                 <div className='border p-2 shadow-md  hover:bg-slate-300'>
                   <ul>
                     <label className='font-bold'>Vehicle Number</label>
-                    <li>{fetchOrder?.order?.vehicle_number}</li>
+                    <li>{orderDetails?.vehicle_number}</li>
                   </ul>
                 </div>
                 <div className='border p-2 shadow-md  hover:bg-slate-300'>
                   <ul>
                     <label className='font-bold'>Distance</label>
-                    <li>{fetchOrder?.order?.distance}</li>
+                    <li>{orderDetails?.distance}</li>
                   </ul>
                 </div>
                 <div className='border p-2 shadow-md  hover:bg-slate-300'>
                   <ul>
                     <label className='font-bold'>Rate Per Km</label>
-                    <li>{fetchOrder?.order?.rate_per_km}</li>
+                    <li>{orderDetails?.rate_per_km}</li>
                   </ul>
                 </div>
                 <div className='border p-2 shadow-md  hover:bg-slate-300'>
                   <ul>
                     <label className='font-bold'>Destination</label>
-                    <li>{fetchOrder?.order?.reach_name}</li>
+                    <li>{orderDetails?.reach_name}</li>
                   </ul>
                 </div>
                 <div className='border p-2 shadow-md  hover:bg-slate-300'>
                   <ul>
                     <label className='font-bold'>Driver Name</label>
-                    <li>{fetchOrder?.order?.driver_name}</li>
+                    <li>{orderDetails?.driver_name}</li>
                   </ul>
                 </div>
                 <div className='border p-2 shadow-md  hover:bg-slate-300'>
                   <ul>
                     <label className='font-bold'>Driver Number</label>
-                    <li>{fetchOrder?.order?.driver_number}</li>
+                    <li>{orderDetails?.driver_number}</li>
                   </ul>
                 </div>
             </div>
@@ -178,6 +176,7 @@ const Orderstage = () => {
                         
                         <div className='delivery-status mb-4'>
                         <label className="text-lg font-bold">Update Delivery Status</label>
+                      
                         <select className="border p-2" onChange={(e) => handleStatusUpdate('delivery_status', e.target.value)}>
                           <option value='not delivered'>Not Delivered</option>
                           <option value='Delivered'>Delivered</option>
@@ -282,6 +281,7 @@ const Orderstage = () => {
                   orderDetails?.paymentReceived?.status === 'Received'?(<p className='text-green-500'>Payment Received</p>):(
                     <div className='payment-received  mb-4'>
                     <label className="text-lg font-bold">Update Payment Received Status</label>
+                    {/* <input placeholder='Enter the Amount' onChange={(e)=>handleStatusUpdate('',e.target.value)}/> */}
                       <select
                         className="border p-2"
                         onChange={(e) => handleStatusUpdate('paymentReceived', e.target.value)}

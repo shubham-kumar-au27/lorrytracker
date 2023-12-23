@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import appStore from './utils/appStore';
 import SandBookingForm from './components/Bookingform';
 import Orderstage from './components/Orderstage';
+import PivotTable from './components/Pivottable';
 
 function App() {
   const appRouter = createBrowserRouter([
@@ -25,6 +26,16 @@ function App() {
     {
       path:'/orderstatus',
       element:<Orderstage/>
+    },
+    {
+      path:'orderstatus/:_id',
+      element:<Orderstage/>
+      
+
+    },
+    {
+      path:'/pivot',
+      element:<PivotTable/>
     }
   
   ])

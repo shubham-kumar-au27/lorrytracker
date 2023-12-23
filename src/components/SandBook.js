@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const SandBook = ({ orderData, setOrderData }) => {
   const inputFields = [
@@ -8,10 +8,10 @@ const SandBook = ({ orderData, setOrderData }) => {
     { label: "Vehicle Number :-", type: "text", name: "vehicle_number" },
     { label: "Driver Name :-", type: "text", name: "driver_name" },
     { label: "Driver Number :-", type: "number", name: "driver_number" },
-    { label: "Sand Weight :-", type: "number", name: "quantity" },
+    { label: "Sand Weight (Metric/ton) :-", type: "number", name: "quantity" },
     { label: "Distance to Travel In Km :-", type: "number", name: "distance" },
-    { label: "Rate Per Km :-", type: "number", name: "rate_per_km" },
-    { label: "Total Amount :-", type: "number", name: "total_amount" },
+    { label: "Rate Per Km (_Rs):-", type: "number", name: "rate_per_km" },
+    { label: "Total Amount (_Rs) :-", type: "number", name: "total_amount" },
   ];
 
   const calculateTotalAmount = () => {
@@ -22,9 +22,13 @@ const SandBook = ({ orderData, setOrderData }) => {
     const calculatedTotalAmount = sandWeight * ratePerKm * distance;
     setOrderData((prevData) => ({
       ...prevData,
-      total_amount: isNaN(calculatedTotalAmount) ? '' : calculatedTotalAmount,
+      total_amount: isNaN(calculatedTotalAmount) ? '' : calculatedTotalAmount.toFixed(), 
     }));
   };
+
+  useEffect(() => {
+    calculateTotalAmount();
+  }, [orderData.quantity, orderData.rate_per_km, orderData.distance]);
 
   return (
     <>
@@ -44,9 +48,6 @@ const SandBook = ({ orderData, setOrderData }) => {
                 ...orderData,
                 [field.name]: e.target.value,
               });
-              if (["quantity", "rate_per_km", "distance"].includes(field.name)) {
-                calculateTotalAmount();
-              }
             }}
             className="mt-1 p-2 border rounded-md w-1/2"
             required

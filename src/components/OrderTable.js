@@ -3,15 +3,18 @@ import React, { useState } from 'react';
 import { useTable, usePagination } from 'react-table';
 import CustomProgressBar from './ProgressBarComponent';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { CSVLink } from 'react-csv';
 import { saveOrder } from '../utils/ordersSlice';
 import EditOrderModal from './EditOrderModal';
 
 const OrderTable = ({ orders }) => {
+  const user = useSelector((store) => store?.user);
   const dispatch = useDispatch()
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+
+  
 
   const handleOpen = (order) => {
     setSelectedOrder(order);
@@ -52,7 +55,7 @@ const OrderTable = ({ orders }) => {
             accessor: 'vehicle_number',
           },
           {
-            Header: 'EIDIT',
+            Header: 'EDIT',
             Cell: ({ row }) => (
               <Link
               onClick={() => handleOpen(row.original)}
@@ -80,13 +83,17 @@ const OrderTable = ({ orders }) => {
         Header: 'Actions',
         Cell: ({ row }) => (
           <div className="flex space-x-2">
-            <Link
-              to="/orderstatus"
-              onClick={() => handleClick(row.original)}
-              className="text-blue-500 hover:underline"
-            >
-              View
-            </Link>
+            { user?.displayName !== 'admin' &&
+                    <Link
+                    to={`/orderstatus/${row.original._id}`}
+                    onClick={() => handleClick(row.original)}
+                    className="text-blue-500 hover:underline"
+                  >
+                    View
+                  </Link>
+
+            }
+        
             <CSVLink data={[row.original]} filename={'order.csv'} className="text-green-500 hover:underline">
               Download
             </CSVLink>

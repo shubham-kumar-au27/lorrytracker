@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
+import { BASE_URL } from '../utils/constants';
 
 // Modal.setAppElement('#root') // replace #root with your app's root element id
 
@@ -28,7 +29,7 @@ const EditOrderModal = ({ isOpen, onRequestClose, order }) => {
     event.preventDefault();
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/v1/order/updatestatus/${order._id}?userId=${id}`,
+        `${BASE_URL}/api/v1/order/updatestatus/${order._id}?userId=${id}`,
         formFields
       );
 

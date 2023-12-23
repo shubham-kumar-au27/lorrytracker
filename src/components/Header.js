@@ -68,17 +68,15 @@ const Header = () => {
           </button>
         </div>
         <div className="flex items-center space-x-4">
-         
+          <Link to={'/home'}><button className="text-white p-2">Home</button></Link>
+        {
+            user.displayName === 'admin'?(<Link to={'/pivot'}><button className="text-white p-2">Pivot</button></Link>):
+            (<Link to ={'/createOrder'}> <button className="text-white p-2">{"Create Order"}</button></Link>)
+          
+        }         
               <button onClick={handleSignOut} className="text-white p-2">
               <FaSignOutAlt />
              </button>
-
-           
-          {
-            user.displayName === 'admin'?(<div></div>):
-            (<Link to ={'/createOrder'}> <button className="text-white p-2">{"Create Order"}</button></Link>)
-          
-        }
         </div>
       </div>
       )
